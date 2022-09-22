@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Max
 
 
 class Author(models.Model):
@@ -49,6 +50,9 @@ class Post(models.Model):
     def dislike(self, value=1):
         self.post_rating -= value
         self.save()
+
+    def __str__(self):
+        return f'{self.title.title()}, {self.pub_date}: {self.article}'
 
 
 class PostCategory(models.Model):

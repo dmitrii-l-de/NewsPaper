@@ -1,0 +1,31 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}
+
+{% block title %}
+Post
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим сам товар, идентификатор которого был передан в url -->
+{% block content %}
+<h1>Свежая новость от {{ post.pub_date | date:'d M Y' }}</h1>
+   <hr>
+   {% if post %}
+       <table>
+           <tr>
+               <td>Заголовок</td>
+               <td>Дата публикации</td>
+               <td>Текст</td>
+           </tr>
+
+           <tr>
+               <td>{{ post.title | censor }}</td>
+               <td>{{ post.pub_date | date:'d M Y' }}</td>
+               <td>{{ post.article |censor }}</td>
+           </tr>
+
+       </table>
+   {% else %}
+       <h2>К сожалению больше новостей нет!</h2>
+   {% endif %}
+{% endblock content %}
