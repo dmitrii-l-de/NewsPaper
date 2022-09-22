@@ -1,0 +1,81 @@
+К сожалению, тема не достаточно раскрыта!
+Во время прохождения курса, приходится проходить другие курсы
+чтобы нормально изучить тему.
+
+Создать двух пользователей (с помощью метода User.objects.create_user('username')).
+user1 = User.objects.create_user('Philip', 'philip@gmail.com', 'philippassword')
+user2 = User.objects.create_user('James', 'james@gmail.com', 'jamespassword')
+
+Создать два объекта модели Author, связанные с пользователями.
+aut1 = Author.objects.create(user = user1)
+aut2 = Author.objects.create(user = user2)
+
+Добавить 4 категории в модель Category.
+cat1 = Category.objects.create(category_name = 'since')
+cat2 = Category.objects.create(category_name = 'kulture')
+cat3 = Category.objects.create(category_name = 'sport')
+cat4 = Category.objects.create(category_name = 'economy')
+Добавить 2 статьи и 1 новость.
+
+post1 = Post.objects.create(author = aut1, choice_field = 'post', title = 'title', article = 'article')
+news1 = Post.objects.create(author = aut1, choice_field = 'news', title = 'title', article = 'article')
+
+Присвоить им категории (как минимум в одной статье/новости должно быть не меньше 2 категорий).
+Создаем объекты категорий
+cat_s = Category.objects.all()[0]
+cat_k = Category.objects.all()[1]
+cat_sp = Category.objects.all()[2]
+cat_e = Category.objects.all()[3]
+
+Присваиваем категорию определенному посту
+post1.category.add(cat_s)
+post1.category.add(cat_k)
+post2.category.add(cat_k)
+post2.category.add(cat_sp)
+news1.category.add(cat_s)
+news1.category.add(cat_e)
+news1.category.add(cat_sp)
+
+Создать как минимум 4 комментария к разным объектам модели Post (в каждом объекте должен быть как минимум один комментарий).
+comm1 = Comment.objects.create(post = post1, user = user2, text_comment = 'Отличная статья')
+comm2 = Comment.objects.create(post = post2, user = user2, text_comment = 'Есть над чем подумать')
+comm3 = Comment.objects.create(post = news1, user = user1, text_comment = 'Надо ехать')
+comm4 = Comment.objects.create(post = news1, user = user1, text_comment = 'Не согласен с автором')
+
+
+Применяя функции like() и dislike() к статьям/новостям и комментариям, скорректировать рейтинги этих объектов.
+comm1.like()
+comm1.like()
+comm2.dislike()
+comm2.dislike()
+comm3.like()
+comm4.dislike()
+comm2.dislike()
+comm2.dislike()
+comm3.like()
+comm4.dislike()
+post1.like
+post1.like()
+post1.like()
+post1.like()
+post2.like()
+news1.dislike()
+
+Обновить рейтинги пользователей.
+aut1.update_rating()
+aut2.update_rating()
+
+
+Вывести все комментарии (дата, пользователь, рейтинг, текст) к этой статье.
+post_max = Post.objects.get(post_rating=(Post.objects.all()).aggregate(Max('post_rating')).get('post_rating__max'))
+print(f"Время публикации: {post_max.pub_date}\nАвтор публикации: {(post_max.author).user}\nРейтинг публикации: {post_max.choice_field}\nЗаголовок публикации: {post_max.choice_field}\nПревью: {post_max.preview()}")
+
+
+Вывод всех коментариев к статье с наибольшим рейтингом
+comall = Comment.objects.filter(comment_rating=post_max.id)
+print(comall.values('date_comment','user','comment_rating','text_comment'))
+
+Вывести поля для определенного элемента QuerySet
+comall = Comment.objects.filter(comment_rating= post_max.id)[0]
+print(f"Дата публикации    : {comall.date_comment}\nАвтор комментария  : {comall.user}\nРейтинг комментария: {comall.comment_rating}\nТекс комментария   : {comall.text_comment}")
+
