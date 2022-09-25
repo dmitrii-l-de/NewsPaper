@@ -1,5 +1,11 @@
-from django.views.generic import ListView, DetailView
-from .models import Post
+from django.views.generic import (ListView, DetailView,
+                                  CreateView, DeleteView, UpdateView)
+from django.contrib.auth.models import User
+from .models import Post, Author
+from .filters import PostFilter
+from .forms import PostForm, AuthorForm
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
 
 class PostList(ListView):
@@ -26,3 +32,73 @@ class PostDetail(DetailView):
     template_name = 'post.html'
     # Название объекта, в котором будет выбранный пользователем продукт
     context_object_name = 'post'
+
+
+class NewsSearch(ListView):
+    model = Post
+    ordering = '-pub_date'
+    template_name = 'search.html'
+    context_object_name = 'newssearch'
+    paginate_by = 10
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        self.filterset = PostFilter(self.request.GET, queryset)
+        return self.filterset.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Добавляем в контекст объект фильтрации.
+        context['filterset'] = self.filterset
+        return context
+
+
+class NewsCreate(PermissionRequiredMixin, CreateView):
+    form_class = PostForm
+    model = Post
+    permission_required = ('add_news',)
+    template_name = 'news_create.html'
+    success_url = reverse_lazy('post_list')
+
+    def form_valid(self, form):
+        post = form.save(commit=False)
+        post.choice_field = 'news'
+        post.author = Author.objects.get(user=self.request.user)
+        return super().form_valid(form)
+
+
+class ArticlesCreate(PermissionRequiredMixin, CreateView):
+    form_class = PostForm
+    model = Post
+    permission_required = ('add_post',)
+    template_name = 'articles_create.html'
+    success_url = reverse_lazy('post_list')
+
+    def form_valid(self, form):
+        post = form.save(commit=False)
+        post.choice_field = 'post'
+        post.author = Author.objects.get(user=self.request.user)
+        return super().form_valid(form)
+
+
+class PostDelete(PermissionRequiredMixin, DeleteView):
+    model = Post
+    template_name = 'news_delete.html'
+    permission_required = ('delete_post',)
+    success_url = reverse_lazy('post_list')
+
+
+class PostUpdate(PermissionRequiredMixin, UpdateView):
+    form_class = PostForm
+    model = Post
+    permission_required = ('change_post',)
+    template_name = 'news_edit.html'
+    success_url = reverse_lazy('post_list')
+
+
+class AuthorUpdate(LoginRequiredMixin, UpdateView):
+    form_class = AuthorForm
+    model = Author
+    template_name = 'author_edit.html'
+    success_url = reverse_lazy('post_list')
+

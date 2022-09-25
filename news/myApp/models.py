@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Max
+from django.urls import reverse
 
 
 class Author(models.Model):
@@ -18,11 +19,17 @@ class Author(models.Model):
         self.save()
 
     def __str__(self):
-        return f'{self.user.username}'
+        return f'{self.user}'
+
+    def get_absolute_url(self):
+        return reverse('authorupdate', args=[str(self.id)])
 
 
 class Category(models.Model):
     category_name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return f'{self.category_name}'
 
 
 class Post(models.Model):
@@ -53,6 +60,9 @@ class Post(models.Model):
 
     def __str__(self):
         return f'{self.title.title()}, {self.pub_date}: {self.article}'
+
+    def get_absolut_url(self):
+        return reverse('news_search', args=[str(self.id)])
 
 
 class PostCategory(models.Model):

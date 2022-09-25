@@ -1,0 +1,40 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}
+{% load custom_tags %}
+
+{% block title %}
+Посты отфильтрованные
+{% endblock title %}
+
+{% block content %}
+    <h1>Отфильтрованные сообщения</h1>
+    <hr>
+    {# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}
+    <form action="" method="get">
+        {{ filterset.form.as_p }}
+        <input type="submit" value="Найти" />
+    </form>
+    <hr>
+    {% if newssearch %}
+        <table>
+            <tr>
+                <td><h4>Заголовок поста</h4></td>
+                <td><h4>Дата поста</h4></td>
+                <td><h4>Текст поста</h4></td>
+            </tr>
+
+            {% for news in newssearch %}
+            <tr>
+                <td>{{ news.title|censor }}</td>
+                <td>{{ news.pub_date }}</td>
+                <td>{{ news.article|censor|truncatechars:22 }}</td>
+            </tr>
+            {% endfor %}
+
+        </table>
+    {% else %}
+        <h2>Сообщений нет!</h2>!
+    {% endif %}
+
+{% endblock content %}
