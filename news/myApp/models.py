@@ -22,7 +22,7 @@ class Author(models.Model):
         return f'{self.user}'
 
     def get_absolute_url(self):
-        return reverse('authorupdate', args=[str(self.id)])
+        return reverse('author_update', args=[str(self.id)])
 
 
 class Category(models.Model):
