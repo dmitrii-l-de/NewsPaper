@@ -21,7 +21,11 @@ Posts
 
            {% for post in post %}
            <tr>
-               <td>{{ post.title | censor }}</td>
+
+               <td>
+<!-- Здесь делаем заголовок кликабельным -->
+                 <a class="nav-link" href="{% url 'post' post.pk %}">{{ post.title|censor }}</a>
+               </td>
                <td>{{ post.pub_date | date:'d M Y' }}</td>
                <td>{{ post.article|truncatewords:20 |censor }}</td>
            </tr>

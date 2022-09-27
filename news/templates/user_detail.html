@@ -1,0 +1,28 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+{{ flatpage.title }}
+{% endblock title %}
+
+{% block content %}
+<h2>Страница авторизованного пользователя {{request.user.username}}</h2>
+<div> Здесь может содержаться персональная информация для каждого пользователя </div>
+{% if is_not_premium %}
+{% endif %}
+<p>Ник: {{request.user.username}}</p>
+
+<p>Email: {{request.user.email}}</p>
+
+<p>Имя: {{request.user.first_name}}</p>
+
+<p>Фамилия: {{request.user.last_name}}</p>
+
+<p>Дата регистрации: {{request.user.date_joined}}</p>
+
+<p>Время последней авторизации: {{request.user.last_login}}</p>
+
+<p>id: {{request.user.pk}}</p>
+<p></p>
+
+<button> <a href="send_email/"> Отправить письмо!</a> </button>
+{% endblock content %}

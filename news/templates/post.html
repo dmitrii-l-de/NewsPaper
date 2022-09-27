@@ -23,7 +23,14 @@ Post
                <td>{{ post.pub_date | date:'d M Y' }}</td>
                <td>{{ post.article |censor }}</td>
            </tr>
-
+           <td>
+                   <form>
+                   {% for el in post.category.all %}
+                   <a class="nav-link" href="subscribe_me/?query={{post.pk}}">{{el}}</a>
+                   <br />
+                   {% endfor %}
+                   </form>
+               </td>
        </table>
    {% else %}
        <h2>К сожалению больше новостей нет!</h2>

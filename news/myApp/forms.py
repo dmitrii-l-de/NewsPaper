@@ -34,3 +34,4 @@ class AuthorForm(forms.ModelForm):
         fields = [
             'user',
         ]
+

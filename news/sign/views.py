@@ -7,6 +7,7 @@ from django.views.generic.edit import CreateView
 from .models import BaseRegisterForm
 
 from myApp.models import Author
+# from myApp.models import Author
 
 
 @login_required
@@ -16,12 +17,14 @@ def upgrade_me(request):
     if not request.user.groups.filter(name='authors').exists():
         author_group.user_set.add(user)
         Author.objects.create(user=user)
-    return redirect('/')
+    return redirect('user_detail')
 
 
 class BaseRegisterView(CreateView):
     model = User
     form_class = BaseRegisterForm
     success_url = '/'
+
+
 
 

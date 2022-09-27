@@ -5,8 +5,8 @@ from django.urls import reverse
 
 
 class Author(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    user_rating = models.IntegerField(default=0)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор')
+    user_rating = models.IntegerField(default=0, verbose_name='Рейтинг')
 
     def update_rating(self):
         self.user_rating = 0
@@ -27,9 +27,15 @@ class Author(models.Model):
 
 class Category(models.Model):
     category_name = models.CharField(max_length=255, unique=True)
+    subscribers = models.ManyToManyField(User, through='CategoryUser')
 
     def __str__(self):
         return f'{self.category_name}'
+
+
+class CategoryUser(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
 
 class Post(models.Model):
@@ -39,13 +45,13 @@ class Post(models.Model):
         (news, 'Новости'),
         (post, 'Посты')
     ]
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name='Автор поста')
     choice_field = models.CharField(max_length=1, choices=CHOICES, default=news)
     pub_date = models.DateTimeField(auto_now_add=True)
-    title = models.CharField(max_length=255)
-    article = models.TextField()
-    post_rating = models.IntegerField(default=0, db_column='post_rating')
-    category = models.ManyToManyField(Category, through='PostCategory')
+    title = models.CharField(max_length=255, verbose_name='Заголовок поста')
+    article = models.TextField(verbose_name='Текст поста')
+    post_rating = models.IntegerField(default=0, db_column='post_rating', verbose_name='Рейтинг поста')
+    category = models.ManyToManyField(Category, through='PostCategory', verbose_name='Категория поста')
 
     def preview(self):
         return f'{self.article[:124]} ...'

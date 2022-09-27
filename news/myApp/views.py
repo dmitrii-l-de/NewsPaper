@@ -1,14 +1,19 @@
 from django.contrib.auth import login
 from django.views.generic import (ListView, DetailView,
-                                  CreateView, DeleteView, UpdateView)
+                                  CreateView, DeleteView, UpdateView,
+                                  TemplateView)
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
-from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
 
-from .models import Post, Author
+from .models import Post, Author, CategoryUser, PostCategory
 from .filters import PostFilter
 from .forms import PostForm, AuthorForm
+from django.core.mail import send_mail
 
 
 class PostList(ListView):
@@ -26,6 +31,16 @@ class PostList(ListView):
     # Это имя списка, в котором будут лежать все объекты.
     # Его надо указать, чтобы обратиться к списку объектов в html-шаблоне.
     context_object_name = 'post'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        self.filterset = PostFilter(self.request.GET, queryset)
+        return self.filterset.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filterset'] = self.filterset
+        return context
 
 
 class PostDetail(DetailView):
@@ -104,4 +119,32 @@ class AuthorUpdate(LoginRequiredMixin, UpdateView):
     model = Author
     template_name = 'author_edit.html'
     success_url = reverse_lazy('post_list')
+
+
+class UserDetail(LoginRequiredMixin, TemplateView):
+    login_url = '/accounts/login/'
+    template_name = 'user_detail.html'
+
+
+@login_required
+def sending_me(request):
+    send_mail(
+        'Subject here Заголовок письма',
+        'Here is the message. - Тестовая отправка.',
+        'gbicfo@yandex.ru',
+        ['dmitriy_l2019@list.ru', request.user.email],
+        fail_silently=False,
+    )
+    return redirect('post_list')
+
+
+@login_required
+def subscribe_me(request):
+    get_obj = request.GET
+    get_obj_pk = int(get_obj['query'])
+    needed_cat_id = ((PostCategory.objects.filter(post_id=get_obj_pk)).
+                     values('category_id'))[0]['category_id']
+
+    CategoryUser.objects.create(user_id=request.user.pk, category_id=needed_cat_id)
+    return redirect('post_list')
 
