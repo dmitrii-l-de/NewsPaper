@@ -1,4 +1,6 @@
 from django.contrib.auth import login
+from django.dispatch import receiver
+from django.template.loader import render_to_string
 from django.views.generic import (ListView, DetailView,
                                   CreateView, DeleteView, UpdateView,
                                   TemplateView)
@@ -9,11 +11,13 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
+from django.db.models.signals import post_save, post_init
+from django.dispatch import receiver # импортируем нужный декоратор
 
-from .models import Post, Author, CategoryUser, PostCategory
+from .models import Post, Author, CategoryUser, PostCategory, User
 from .filters import PostFilter
-from .forms import PostForm, AuthorForm
-from django.core.mail import send_mail
+from .forms import PostForm, UserForm
+from django.core.mail import send_mail, EmailMultiAlternatives
 
 
 class PostList(ListView):
@@ -31,6 +35,7 @@ class PostList(ListView):
     # Это имя списка, в котором будут лежать все объекты.
     # Его надо указать, чтобы обратиться к списку объектов в html-шаблоне.
     context_object_name = 'post'
+    paginate_by = 8
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -115,27 +120,18 @@ class PostUpdate(PermissionRequiredMixin, UpdateView):
 
 
 class AuthorUpdate(LoginRequiredMixin, UpdateView):
-    form_class = AuthorForm
-    model = Author
+    model = User
+    form_class = UserForm
+    permission_required = ('myApp.add_post', 'myApp.change_post', 'myApp.change_email')
     template_name = 'author_edit.html'
     success_url = reverse_lazy('post_list')
 
 
 class UserDetail(LoginRequiredMixin, TemplateView):
-    login_url = '/accounts/login/'
     template_name = 'user_detail.html'
 
-
-@login_required
-def sending_me(request):
-    send_mail(
-        'Subject here Заголовок письма',
-        'Here is the message. - Тестовая отправка.',
-        'gbicfo@yandex.ru',
-        ['dmitriy_l2019@list.ru', request.user.email],
-        fail_silently=False,
-    )
-    return redirect('post_list')
+    def get(self, request, *args, **kwargs):
+        return render(request, 'user_detail.html', {})
 
 
 @login_required
@@ -148,3 +144,39 @@ def subscribe_me(request):
     CategoryUser.objects.create(user_id=request.user.pk, category_id=needed_cat_id)
     return redirect('post_list')
 
+
+@login_required
+# Здесь реализована отправка письма со страницы user_detail.html
+def sending_me(request):
+    obj = request.GET # получаем данные из запраса которые переданы через ссылку
+    obj_name = obj['q'] # инициализируем эти данные
+    obj_email = obj['email'] # инициализируем эти данные
+    send_mail(
+        f'Письмо от пользователя: {obj_name}, адрес для ответа: {obj_email}',
+        'Here is the message. - Привет.',
+        'gbicfo@yandex.ru',
+        ['dmitriy_l2019@list.ru', ],
+        fail_silently=False,
+    )
+    return redirect('post_list')
+
+# Здесь реализована рассылка приветственного письма зарегиным пользователям
+@receiver(post_save, sender=User)
+def new_user_appointment(sender, instance, created, **kwargs):
+    print('Test')
+    print(instance)
+    user = User.objects.get(username=instance.username)
+    print(user)
+    print(user.email)
+
+    html = render_to_string(
+        'email_confirmation_signup_message.html ')
+
+    msg = EmailMultiAlternatives(
+        subject=f'Уважаемый {user}, добро пожаловать!',
+        from_email='gbicfo@yandex.ru',
+        to=['dmitriy_leznev@mail.ru', user.email],  # отправка необходимым людям
+    )
+    msg.attach_alternative(html, 'text/html')
+    msg.send()
+    return redirect('post_list')

@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import Post, Author
+from .models import Post, Author, User
 
 
 class PostForm(forms.ModelForm):
@@ -13,7 +13,6 @@ class PostForm(forms.ModelForm):
             'title',
             'article',
             'category',
-            'author',
         ]
 
     def clean(self):
@@ -28,10 +27,19 @@ class PostForm(forms.ModelForm):
         return cleaned_data
 
 
-class AuthorForm(forms.ModelForm):
+class UserForm(forms.ModelForm):
     class Meta:
-        model = Author
+        model = User
         fields = [
-            'user',
+           'email',
+           'username',
+           'first_name',
+           'last_name',
         ]
 
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
+        username = cleaned_data.get("username")
+        first_name = cleaned_data.get('first_name')
+        last_name = cleaned_data.get('last_name')

@@ -28,3 +28,5 @@ class BasicSignupForm(SignupForm):
         common_group.user_set.add(user)
         return user
 
+
+

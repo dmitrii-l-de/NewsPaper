@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Где я это увижу?</title>
+</head>
+<body>
+<h2 style="font-style:italic;">В категории {{ post_object }} появилась новая статья&nbsp; - &nbsp;<span style="color:#EE82EE;">{{ send_post }}</span>!</h2>
+
+<h2 style="font-style:italic;">В статье (превью): <span style="color:#EE82EE;">{{ send_text }}</span></h2>
+
+<h2 style="font-style:italic;">Читайте всю статью перейдя по ссылке:</h2>
+
+<h2 style="font-style:italic;"><a href="http://127.0.0.1:8000/news/{{ post_id }}">http://127.0.0.1:8000/news/{{ post_id }}</a></h2>
+</body>
+</html>

@@ -37,6 +37,9 @@ class CategoryUser(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f'{self.user}, {self.category}'
+
 
 class Post(models.Model):
     post = 'P'
@@ -68,12 +71,15 @@ class Post(models.Model):
         return f'{self.title.title()}, {self.pub_date}: {self.article}'
 
     def get_absolut_url(self):
-        return reverse('news_search', args=[str(self.id)])
+        return reverse('post', args=[str(self.id)])
 
 
 class PostCategory(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'Статья: {self.post}\nКатегория: {self.category}'
 
 
 class Comment(models.Model):

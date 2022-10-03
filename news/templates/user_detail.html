@@ -23,6 +23,7 @@
 
 <p>id: {{request.user.pk}}</p>
 <p></p>
-
-<button> <a href="send_email/"> Отправить письмо!</a> </button>
+<button> <a href="/"> Стать автором!</a> </button>
+<button> <a href="/news/author_edit/{{ user.pk }}/"> Редактировать профиль!</a> </button>
+<button> <a href="/news/sending_me/?q={{ user.username }}&email={{ user.email }}"> Отправить письмо!</a> </button>
 {% endblock content %}

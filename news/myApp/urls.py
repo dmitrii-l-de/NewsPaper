@@ -23,5 +23,6 @@ urlpatterns = [
     path('author_edit/<int:pk>/', AuthorUpdate.as_view(), name='author_update'),
     path('user_detail/', UserDetail.as_view(), name='user_detail'),
     path('subscribe_me/', subscribe_me, name='subscribe'),
-    path('user_detail/send_email/', sending_me, name='sending'),
+    path('sending_me/', sending_me, name='sending'),
+
 ]

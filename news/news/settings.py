@@ -32,8 +32,9 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django_filters',
-    'myApp',
+    'myApp.apps.MyappConfig',
     'sign',
+
     'protect',
     'allauth',
     'allauth.account',
@@ -68,10 +69,12 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates')],
+
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.debug',
+                # 'django.template.context_processors.debug',
+
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -137,25 +140,27 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    BASE_DIR / "static"
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STATICFILES_DIRS = [
-    BASE_DIR / "static"
-]
+
 
 # LOGIN_URL = '/sign/login/'
 LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/news/user_detail/'
-LOGOUT_REDIRECT_URL = '/news/user_detail/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/news/'
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = None#'mandatory'
 
 ACCOUNT_FORMS = {'signup': 'sign.models.BasicSignupForm'}
 
@@ -168,3 +173,5 @@ EMAIL_HOST_USER = 'gbicfo'  # ваше имя пользователя, напр
 EMAIL_HOST_PASSWORD = '220489Dima'  # пароль от почты
 EMAIL_USE_SSL = True  # Яндекс использует ssl, подробнее о том, что это,
 # почитайте в дополнительных источниках, но включать его здесь обязательно
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER + '@yandex.ru'
